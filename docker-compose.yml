@@ -32,6 +32,7 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@airflow-postgres/${AIRFLOW_DB_NAME}
       AIRFLOW_CONN_PANDASCORE_API: ${AIRFLOW_CONN_PANDASCORE_API}
+      AIRFLOW_CONN_VCT_WAREHOUSE: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     entrypoint: /bin/bash
     command:
       - -c
@@ -49,6 +50,7 @@ services:
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./extract:/opt/airflow/extract
+      - ./load:/opt/airflow/load
       - ./data:/opt/airflow/data
 
   airflow-webserver:
@@ -62,6 +64,7 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@airflow-postgres/${AIRFLOW_DB_NAME}
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW_CONN_PANDASCORE_API: ${AIRFLOW_CONN_PANDASCORE_API}
+      AIRFLOW_CONN_VCT_WAREHOUSE: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     ports:
       - "8080:8080"
     volumes:
@@ -69,6 +72,7 @@ services:
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./extract:/opt/airflow/extract
+      - ./load:/opt/airflow/load
       - ./data:/opt/airflow/data
     command: webserver
 
@@ -83,11 +87,13 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@airflow-postgres/${AIRFLOW_DB_NAME}
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW_CONN_PANDASCORE_API: ${AIRFLOW_CONN_PANDASCORE_API}
+      AIRFLOW_CONN_VCT_WAREHOUSE: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./extract:/opt/airflow/extract
+      - ./load:/opt/airflow/load
       - ./data:/opt/airflow/data
     command: scheduler
 

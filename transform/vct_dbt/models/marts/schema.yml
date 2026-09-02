@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: stg_matches
+    description: One row per raw VCT match, with top-level fields flattened out of the raw JSONB payload.
+    columns:
+      - name: match_id
+        tests:
+          - unique
+          - not_null
+
+  - name: int_match_teams
+    description: One row per team per match (two rows per match), carrying that team's score and win flag. Bridge table between matches and teams.
+    columns:
+      - name: match_id
+        tests:
+          - not_null
+      - name: team_id
+        tests:
+          - not_null
+
+  - name: dim_teams
+    description: One row per team, with aggregate matches played, matches won, and win rate across all loaded flagship VCT matches.
+    columns:
+      - name: team_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_tournaments
+    description: One row per tournament, with parent serie/league context and match counts.
+    columns:
+      - name: tournament_id
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_matches
+    description: Fact table at match grain. One row per match with both teams, scores, winner, and tournament context — the primary table for analysis and dashboards.
+    columns:
+      - name: match_id
+        tests:
+          - unique
+          - not_null

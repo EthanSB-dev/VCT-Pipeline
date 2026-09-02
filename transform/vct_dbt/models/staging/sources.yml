@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: public
+    tables:
+      - name: raw_matches
+        description: >
+          Raw, unmodified JSON payloads for flagship VCT matches pulled from
+          the PandaScore API. One row per match, keyed on match_id. Landed
+          via the extract/load Airflow DAG using an ELT pattern — no
+          parsing happens before this point.
+        columns:
+          - name: match_id
+            description: PandaScore's unique match identifier.
+            tests:
+              - unique
+              - not_null
+          - name: raw_payload
+            description: Full raw JSON match object as returned by PandaScore.
+            tests:
+              - not_null
+          - name: loaded_at
+            description: Timestamp this row was last upserted by the load stage.

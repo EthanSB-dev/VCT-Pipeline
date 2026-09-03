@@ -1,25 +1,28 @@
 """
-VCT extraction + load DAG.
+VCT extraction + load + transform DAG.
 
-Orchestrates the full extract -> load flow:
+Orchestrates the full extract -> load -> transform flow:
 1. Pull new flagship VCT matches from PandaScore (extract/extract_matches.py)
 2. Load the resulting raw JSON files into the raw_matches Postgres table
-   (load/load_matches.py), using an ELT pattern -- no parsing/transforming
-   happens here, that's dbt's job in a later stage.
+   (load/load_matches.py), using an ELT pattern.
+3. Run dbt to transform raw_matches into staging/intermediate/marts models
+   (transform/vct_dbt), producing fct_matches, dim_teams, dim_tournaments.
 
 Credentials for both PandaScore and Postgres are resolved from Airflow
-Connections at runtime, never from local .env files (the containers don't
-have one) and never hardcoded in this file.
+Connections / environment variables at runtime, never hardcoded in this file.
 """
 import sys
 from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
 from airflow.hooks.base import BaseHook
 
 sys.path.insert(0, "/opt/airflow/extract")
 sys.path.insert(0, "/opt/airflow/load")
+
+DBT_PROJECT_DIR = "/opt/airflow/transform/vct_dbt"
 
 
 def run_extraction(**context):
@@ -56,15 +59,16 @@ def log_summary(**context):
     loaded_at = context["ti"].xcom_pull(key="load_completed_at", task_ids="run_load")
     print(f"Extraction finished at: {extracted_at}")
     print(f"Load finished at: {loaded_at}")
+    print("Transform (dbt run + dbt test) completed successfully.")
 
 
 with DAG(
     dag_id="vct_extraction",
-    description="Extract new flagship VCT matches from PandaScore and load into Postgres",
+    description="Extract new flagship VCT matches, load into Postgres, and transform with dbt",
     start_date=datetime(2026, 8, 1),
-    schedule=None,
+    schedule="0 */6 * * *",
     catchup=False,
-    tags=["vct", "extraction", "load"],
+    tags=["vct", "extraction", "load", "transform"],
 ) as dag:
 
     extract_task = PythonOperator(
@@ -77,9 +81,19 @@ with DAG(
         python_callable=run_load,
     )
 
+    dbt_run_task = BashOperator(
+        task_id="dbt_run",
+        bash_command=f"cd {DBT_PROJECT_DIR} && dbt run",
+    )
+
+    dbt_test_task = BashOperator(
+        task_id="dbt_test",
+        bash_command=f"cd {DBT_PROJECT_DIR} && dbt test",
+    )
+
     summary_task = PythonOperator(
         task_id="log_summary",
         python_callable=log_summary,
     )
 
-    extract_task >> load_task >> summary_task
+    extract_task >> load_task >> dbt_run_task >> dbt_test_task >> summary_task

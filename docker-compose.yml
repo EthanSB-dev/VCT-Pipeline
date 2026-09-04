@@ -12,6 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+
   airflow-postgres:
     image: postgres:16
     container_name: airflow_postgres
@@ -23,8 +24,9 @@ services:
     volumes:
       - airflow_postgres_data:/var/lib/postgresql/data
 
+
   airflow-init:
-    image: apache/airflow:2.9.3
+    build: .
     container_name: vct_airflow_init
     depends_on:
       - airflow-postgres
@@ -33,6 +35,10 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@airflow-postgres/${AIRFLOW_DB_NAME}
       AIRFLOW_CONN_PANDASCORE_API: ${AIRFLOW_CONN_PANDASCORE_API}
       AIRFLOW_CONN_VCT_WAREHOUSE: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DBT_PROFILES_DIR: /opt/airflow/transform/vct_dbt
     entrypoint: /bin/bash
     command:
       - -c
@@ -52,9 +58,11 @@ services:
       - ./extract:/opt/airflow/extract
       - ./load:/opt/airflow/load
       - ./data:/opt/airflow/data
+      - ./transform:/opt/airflow/transform
+
 
   airflow-webserver:
-    image: apache/airflow:2.9.3
+    build: .
     container_name: vct_airflow_webserver
     restart: unless-stopped
     depends_on:
@@ -65,6 +73,10 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW_CONN_PANDASCORE_API: ${AIRFLOW_CONN_PANDASCORE_API}
       AIRFLOW_CONN_VCT_WAREHOUSE: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DBT_PROFILES_DIR: /opt/airflow/transform/vct_dbt
     ports:
       - "8080:8080"
     volumes:
@@ -74,10 +86,12 @@ services:
       - ./extract:/opt/airflow/extract
       - ./load:/opt/airflow/load
       - ./data:/opt/airflow/data
+      - ./transform:/opt/airflow/transform
     command: webserver
 
+
   airflow-scheduler:
-    image: apache/airflow:2.9.3
+    build: .
     container_name: vct_airflow_scheduler
     restart: unless-stopped
     depends_on:
@@ -88,6 +102,10 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW_CONN_PANDASCORE_API: ${AIRFLOW_CONN_PANDASCORE_API}
       AIRFLOW_CONN_VCT_WAREHOUSE: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DBT_PROFILES_DIR: /opt/airflow/transform/vct_dbt
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
@@ -95,7 +113,9 @@ services:
       - ./extract:/opt/airflow/extract
       - ./load:/opt/airflow/load
       - ./data:/opt/airflow/data
+      - ./transform:/opt/airflow/transform
     command: scheduler
+
 
 volumes:
   postgres_data:

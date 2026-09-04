@@ -12,7 +12,7 @@ import os
 from datetime import datetime, timezone
 
 from pandascore_client import PandaScoreClient
-from vct_filters import is_flagship_vct_serie
+from vct_filters import is_flagship_vct_serie, VCT_LEAGUE_ID
 from checkpoint import read_checkpoint, write_checkpoint
 
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
@@ -54,7 +54,8 @@ def extract_new_matches():
                 break
 
             serie_name = m.get("serie", {}).get("full_name", "")
-            if is_flagship_vct_serie(serie_name):
+            league_id = m.get("league", {}).get("id")
+            if is_flagship_vct_serie(serie_name) and league_id == VCT_LEAGUE_ID:
                 new_matches.append(m)
                 if end_at > newest_end_at_seen:
                     newest_end_at_seen = end_at
@@ -67,8 +68,8 @@ def extract_new_matches():
         return
 
     os.makedirs(RAW_DIR, exist_ok=True)
-    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    out_path = os.path.join(RAW_DIR, f"matches_{today_str}.json")
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    out_path = os.path.join(RAW_DIR, f"matches_incremental_{run_id}.json")
 
     with open(out_path, "w") as f:
         json.dump(new_matches, f, indent=2)

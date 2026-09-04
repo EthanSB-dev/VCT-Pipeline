@@ -3,7 +3,7 @@ vct_dbt:
   outputs:
     dev:
       type: postgres
-      host: postgres
+      host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
       port: 5432
       user: "{{ env_var('POSTGRES_USER') }}"
       pass: "{{ env_var('POSTGRES_PASSWORD') }}"

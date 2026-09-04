@@ -335,17 +335,6 @@ order by win_rate_pct desc, matches_played desc;
 └── .env.example                   # Required environment-variable template
 ```
 
-## Resume Summary
-
-**Project:** VCT Match Data Pipeline  
-**Stack:** Python, PandaScore API, PostgreSQL, dbt, Apache Airflow, Docker Compose
-
-Built and containerized an end-to-end ELT pipeline for Valorant Champions Tour match data. The pipeline incrementally extracts PandaScore API data, loads raw JSON into PostgreSQL, transforms it into tested staging, intermediate, and mart models with dbt, and uses Airflow to orchestrate the workflow every six hours.
-
-### Resume Bullet
-
-> Built an Airflow-orchestrated VCT ELT pipeline using Python, PostgreSQL, dbt, and Docker; automated six-hour PandaScore API ingestion and transformed 1,535 match records into tested analytics fact and dimension models.
-
 ## Future Enhancements
 
 - Add dbt source-freshness checks and relationship tests
@@ -363,4 +352,4 @@ Built and containerized an end-to-end ELT pipeline for Valorant Champions Tour m
 
 ## License
 
-This project is intended for educational and portfolio use.
+This project is intended for portfolio use.

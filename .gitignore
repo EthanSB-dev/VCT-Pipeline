@@ -6,3 +6,4 @@ data/checkpoint.json
 .DS_Store
 venv/
 logs/
+transform/vct_dbt/.user.yml

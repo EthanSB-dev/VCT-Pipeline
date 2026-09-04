@@ -139,9 +139,7 @@ Replace the filename below if your Airflow screenshot has a different name.
 
 ```
 
-![Successful Airflow DAG run](airflow-successful-dag-run.png)
-
-![Description of image](airflow-successful-dag-run.png)
+![Successful Airflow DAG run](docs/images/airflow-successful-dag-run.png)
 
 ### Successful dbt Build
 
@@ -336,6 +334,17 @@ order by win_rate_pct desc, matches_played desc;
 ├── Dockerfile                     # Airflow image with dbt and Git
 └── .env.example                   # Required environment-variable template
 ```
+
+## Resume Summary
+
+**Project:** VCT Match Data Pipeline  
+**Stack:** Python, PandaScore API, PostgreSQL, dbt, Apache Airflow, Docker Compose
+
+Built and containerized an end-to-end ELT pipeline for Valorant Champions Tour match data. The pipeline incrementally extracts PandaScore API data, loads raw JSON into PostgreSQL, transforms it into tested staging, intermediate, and mart models with dbt, and uses Airflow to orchestrate the workflow every six hours.
+
+### Resume Bullet
+
+> Built an Airflow-orchestrated VCT ELT pipeline using Python, PostgreSQL, dbt, and Docker; automated six-hour PandaScore API ingestion and transformed 1,535 match records into tested analytics fact and dimension models.
 
 ## Future Enhancements
 

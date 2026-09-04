@@ -141,6 +141,8 @@ Replace the filename below if your Airflow screenshot has a different name.
 
 ![Successful Airflow DAG run](airflow-successful-dag-run.png)
 
+![Description of image](airflow-successful-dag-run.png)
+
 ### Successful dbt Build
 
 Replace the filename below if your dbt screenshot has a different name.

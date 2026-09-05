@@ -1,0 +1,56 @@
+[
+  {
+    "id": 900001,
+    "name": "Sentinels vs. Cloud9",
+    "status": "finished",
+    "match_type": "best_of",
+    "number_of_games": 3,
+    "forfeit": false,
+    "begin_at": "2025-06-01T18:00:00Z",
+    "end_at": "2025-06-01T19:30:00Z",
+    "scheduled_at": "2025-06-01T18:00:00Z",
+    "modified_at": "2025-06-01T19:30:00Z",
+    "winner_id": 1001,
+    "winner": {"id": 1001, "name": "Sentinels"},
+    "winner_type": "Team",
+    "serie": {"id": 5001, "full_name": "VCT 2025: Americas Kickoff", "year": 2025},
+    "league": {"id": 4531, "name": "VCT Americas"},
+    "tournament": {"id": 6001, "name": "Kickoff", "tier": "s", "region": "na"},
+    "videogame_version": {"name": "VALORANT"},
+    "opponents": [
+      {"opponent": {"id": 1001, "name": "Sentinels", "acronym": "SEN", "location": "us"}},
+      {"opponent": {"id": 1002, "name": "Cloud9", "acronym": "C9", "location": "us"}}
+    ],
+    "results": [
+      {"team_id": 1001, "score": 2},
+      {"team_id": 1002, "score": 0}
+    ]
+  },
+  {
+    "id": 900002,
+    "name": "Sentinels vs. NRG",
+    "status": "finished",
+    "match_type": "best_of",
+    "number_of_games": 3,
+    "forfeit": false,
+    "begin_at": "2025-06-08T18:00:00Z",
+    "end_at": "2025-06-08T19:15:00Z",
+    "scheduled_at": "2025-06-08T18:00:00Z",
+    "modified_at": "2025-06-08T19:15:00Z",
+    "winner_id": 1003,
+    "winner": {"id": 1003, "name": "NRG"},
+    "winner_type": "Team",
+    "serie": {"id": 5001, "full_name": "VCT 2025: Americas Kickoff", "year": 2025},
+    "league": {"id": 4531, "name": "VCT Americas"},
+    "tournament": {"id": 6001, "name": "Kickoff", "tier": "s", "region": "na"},
+    "videogame_version": {"name": "VALORANT"},
+    "opponents": [
+      {"opponent": {"id": 1001, "name": "Sentinels", "acronym": "SEN", "location": "us"}},
+      {"opponent": {"id": 1003, "name": "NRG", "acronym": "NRG", "location": "us"}}
+    ],
+    "results": [
+      {"team_id": 1001, "score": 1},
+      {"team_id": 1003, "score": 2}
+    ]
+  }
+]

@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python-tests:
+    name: Python unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run pytest
+        run: pytest tests/ -v
+
+  dbt-build:
+    name: dbt build (models + data tests)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vct_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vct_ci
+      DBT_PROFILES_DIR: ${{ github.workspace }}/transform/vct_dbt
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python + dbt dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install "dbt-core==1.8.2" "dbt-postgres==1.8.2"
+
+      - name: Seed raw_matches with fixture data
+        run: |
+          mkdir -p data/raw
+          cp tests/fixtures/matches_ci_fixture.json data/raw/
+          python load/load_matches.py "postgresql://postgres:postgres@localhost:5432/vct_ci"
+
+      - name: dbt debug
+        working-directory: transform/vct_dbt
+        run: dbt debug
+
+      - name: dbt build
+        working-directory: transform/vct_dbt
+        run: dbt build

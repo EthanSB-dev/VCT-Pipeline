@@ -137,29 +137,17 @@ The matching raw, staged, and fact-table row counts demonstrate that the current
 
 Replace the filename below if your Airflow screenshot has a different name.
 
-```markdown
-
-```
-
 ![Successful Airflow DAG run](docs/images/airflow-successful-dag-run.png)
 
 ### Successful dbt Build
 
 Replace the filename below if your dbt screenshot has a different name.
 
-```markdown
-
-```
-
 ![Successful dbt build](docs/images/dbt-build-success.png)
 
 ### Pipeline Row-Count Validation
 
 Replace the filename below if your database-count screenshot has a different name.
-
-```markdown
-
-```
 
 ![Pipeline row-count validation](docs/images/pipeline-row-counts.png)
 
@@ -271,8 +259,6 @@ PASS=18 WARN=0 ERROR=0 SKIP=0
 
 ## Continuous Integration
 
-[#continuous-integration](#continuous-integration)
-
 Every push and pull request to `main` runs a GitHub Actions workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) with two jobs:
 
 | Job          | What it validates                                                                                                 |
@@ -282,9 +268,29 @@ Every push and pull request to `main` runs a GitHub Actions workflow ([`.github/
 
 This means a pull request that breaks the flagship-match filtering logic, the checkpoint mechanism, or any dbt model or test fails CI before it can reach `main` — the same failure modes that would otherwise only surface in a scheduled Airflow run.
 
+## Dashboard
+
+A Streamlit app in [`dashboard/app.py`](dashboard/app.py) reads directly from the `analytics.*` marts and renders:
+
+- Team win rates (bar chart, filterable by minimum matches played), from `dim_teams`
+- Tournament summary table, from `dim_tournaments`
+- Recent finished matches, from `fct_matches`
+
+The dashboard contains no transformation logic of its own — it queries what dbt already built. If a number on the dashboard looks wrong, the bug is upstream in the pipeline, not in the dashboard code.
+
+### Running the dashboard locally
+
+```text
+cd dashboard
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+The app reads the same `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` environment variables as the rest of the pipeline, so it works with the same `.env` file — no separate configuration. If running outside Docker against the Dockerized Postgres, set `POSTGRES_HOST=localhost`.
+
 ## Analysis Opportunities
 
-This project is complete as a data-engineering portfolio project. The final `analytics.fct_matches` mart provides a foundation for further analysis or an optional dashboard.
+This project is complete as a data-engineering portfolio project. The final `analytics.fct_matches` mart powers the dashboard above and provides a foundation for further analysis.
 
 Possible analysis questions include:
 
@@ -351,6 +357,9 @@ order by win_rate_pct desc, matches_played desc;
 │   ├── test_checkpoint.py         # Unit tests for checkpoint read/write
 │   └── fixtures/
 │       └── matches_ci_fixture.json  # Sample raw payloads used to seed CI's dbt build
+├── dashboard/
+│   ├── app.py                     # Streamlit dashboard reading from analytics marts
+│   └── requirements.txt           # Dashboard-specific dependencies
 ├── docs/
 │   └── images/                    # Airflow, dbt, and validation screenshots
 ├── docker-compose.yml             # Local services and Docker networking
@@ -364,7 +373,6 @@ order by win_rate_pct desc, matches_played desc;
 
 - Add dbt source-freshness checks and relationship tests
 - Add pipeline alerts for Airflow task failures
-- Add a dashboard built from the analytics mart models
 - Add map-level, player-level, and event-stage analytics when supported by source data
 - Add longer-term trend analysis and team-performance reporting
 

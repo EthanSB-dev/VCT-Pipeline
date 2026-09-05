@@ -276,6 +276,8 @@ A Streamlit app in [`dashboard/app.py`](dashboard/app.py) reads directly from th
 - Tournament summary table, from `dim_tournaments`
 - Recent finished matches, from `fct_matches`
 
+![Recent matches view](docs/images/recent_matches.png)
+
 The dashboard contains no transformation logic of its own — it queries what dbt already built. If a number on the dashboard looks wrong, the bug is upstream in the pipeline, not in the dashboard code.
 
 ### Running the dashboard locally
